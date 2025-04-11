@@ -5,37 +5,178 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Medical Misinformation Detector</title>
   <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1><img src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" alt="Logo" class="logo"> MedInfoCheck</h1>
-      <nav>
-        <ul>
-          <li><a href="/">Home</a></li>
-        </ul>
-      </nav>
+      <h1><img src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" alt="Logo" class="logo"> MedLens</h1>
+      <p class="subtitle">Detect medical misinformation in text, links, and images</p>
     </header>
 
+    <div class="ratings-menu">
+      <h3><i class="fas fa-chart-bar"></i> Community Ratings</h3>
+      <div class="rating-categories">
+        <div class="rating-category">
+          <h4>Accuracy</h4>
+          <div class="rating-stars">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            <i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+          </div>
+        </div>
+        <div class="rating-category">
+          <h4>Reliability</h4>
+          <div class="rating-stars">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            <i class="fas fa-star"></i><i class="far fa-star"></i>
+          </div>
+        </div>
+        <div class="rating-category">
+          <h4>User Experience</h4>
+          <div class="rating-stars">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+            <i class="fas fa-star"></i><i class="fas fa-star"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <main>
-      <form action="/check" method="POST">
-        <label for="input_type">Select Input Type:</label>
-        <select name="input_type" id="input_type">
-          <option value="text">Text</option>
-          <option value="link">Link</option>
-          <option value="image">Image (URL)</option>
-        </select>
+      <form id="checkForm" action="/check" method="POST">
+        <div class="form-group">
+          <label for="input_type"><i class="fas fa-list"></i> Select Input Type:</label>
+          <select name="input_type" id="input_type" required>
+            <option value="">Choose an option</option>
+            <option value="text">Text</option>
+            <option value="link">Link</option>
+            <option value="image">Image (URL)</option>
+          </select>
+        </div>
 
-        <label for="input">Enter Text / Link / Image URL:</label>
-        <input type="text" name="input" id="input" required>
+        <div class="form-group">
+          <label for="input" id="input_label"><i class="fas fa-pencil-alt"></i> Enter Text:</label>
+          <input type="text" name="input" id="input" required placeholder="Enter your content here...">
+        </div>
 
-        <button type="submit">Check</button>
+        <div class="image-preview-container">
+          <img id="imagePreview" class="image-preview" alt="Image preview" style="display:none;">
+        </div>
+
+        <button type="submit" id="submitBtn">
+          <i class="fas fa-search"></i> Check
+        </button>
       </form>
     </main>
 
     <footer>
-      <p>&copy; 2025 MedInfoCheck</p>
+      <p>&copy; 2025 MedLens - Medical Information Verification System</p>
     </footer>
   </div>
+
+  <<!-- Chatbot -->
+<div class="chatbot-container">
+    <div class="chatbot-header">
+      <span><i class="fas fa-robot"></i> MedLens Assistant</span>
+      <i class="fas fa-times" id="closeChatbot"></i>
+    </div>
+  
+    <div class="chatbot-messages" id="chatbotMessages">
+      <div class="message bot-message">
+        Hello! I'm your MedLens assistant. How can I help you today?
+      </div>
+  
+      {% if user_message %}
+        <div class="message user-message">
+          {{ user_message }}
+        </div>
+        <div class="message bot-message">
+          {{ bot_reply }}
+        </div>
+      {% endif %}
+    </div>
+  
+    <form action="/chat" method="POST" class="chatbot-input">
+      <input type="text" id="chatbotInput" name="message" placeholder="Type your message..." required>
+      <button type="submit" id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+    </form>
+  </div>
+  <form method="POST" action="/chat">
+    <input type="text" name="message" placeholder="Type your message..." required>
+    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+  </form>
+  
+  <!-- Optional: Display chat -->
+  {% if user_message %}
+    <div class="message user-message">{{ user_message }}</div>
+    <div class="message bot-message">{{ bot_reply }}</div>
+  {% endif %}
+    
+
+  <script>
+    $(document).ready(function () {
+      $('#input_type').change(function () {
+        const type = $(this).val();
+        let label = '';
+        let placeholder = '';
+        switch (type) {
+          case 'text':
+            label = 'Enter Text:';
+            placeholder = 'Paste your medical information here...';
+            break;
+          case 'link':
+            label = 'Enter Link:';
+            placeholder = 'Paste the URL here...';
+            break;
+          case 'image':
+            label = 'Enter Image URL:';
+            placeholder = 'Paste the image URL here...';
+            break;
+        }
+        $('#input_label').text(label);
+        $('#input').attr('placeholder', placeholder);
+        $('#imagePreview').hide();
+      });
+
+      $('#input').on('input', function () {
+        if ($('#input_type').val() === 'image') {
+          const url = $(this).val();
+          if (url.match(/\.(jpeg|jpg|gif|png)$/)) {
+            $('#imagePreview').attr('src', url).show();
+          } else {
+            $('#imagePreview').hide();
+          }
+        }
+      });
+
+      $('#closeChatbot').click(function () {
+        $('.chatbot-container').hide();
+      });
+
+      function addMessage(message, isUser) {
+        const messageClass = isUser ? 'user-message' : 'bot-message';
+        const messageHtml = `<div class="message ${messageClass}">${message}</div>`;
+        $('#chatbotMessages').append(messageHtml);
+        $('#chatbotMessages').scrollTop($('#chatbotMessages')[0].scrollHeight);
+      }
+
+      $('#sendMessage').click(function () {
+        const message = $('#chatbotInput').val().trim();
+        if (message) {
+          addMessage(message, true);
+          $('#chatbotInput').val('');
+          setTimeout(() => {
+            addMessage("I'm here to help you verify medical information. You can paste text, links, or image URLs in the main form above.", false);
+          }, 1000);
+        }
+      });
+
+      $('#chatbotInput').keypress(function (e) {
+        if (e.which == 13) {
+          $('#sendMessage').click();
+        }
+      });
+    });
+  </script>
 </body>
 </html>

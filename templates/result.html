@@ -3,39 +3,117 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Result - MedInfoCheck</title>
+  <title>Result - MedLens</title>
   <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
   <div class="container">
     <header>
-      <h1><img src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" alt="Logo" class="logo"> MedInfoCheck</h1>
+      <h1><img src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" alt="Logo" class="logo"> MedLens</h1>
     </header>
 
     <main>
-      <h2>Result:</h2>
-      <p><strong>Status:</strong> {{ result }}</p>
+      <div class="result-container">
+        <h2><i class="fas fa-clipboard-check"></i> Analysis Result</h2>
+        
+        <div class="status {{ 'real' if result == 'Likely Real Information' else 'fake' }}">
+          <i class="fas {{ 'fa-check-circle' if result == 'Likely Real Information' else 'fa-exclamation-circle' }}"></i>
+          {{ result }}
+        </div>
 
-      <div class="stars">
-        {% for i in range(0, stars) %}
-          <span>&#9733;</span>
-        {% endfor %}
-        {% for i in range(stars, 5) %}
-          <span class="dim">&#9733;</span>
-        {% endfor %}
+        <div class="confidence">
+          <h3><i class="fas fa-chart-line"></i> Confidence Level:</h3>
+          <div class="stars">
+            {% for i in range(0, stars) %}
+              <span><i class="fas fa-star"></i></span>
+            {% endfor %}
+            {% for i in range(stars, 5) %}
+              <span class="dim"><i class="far fa-star"></i></span>
+            {% endfor %}
+          </div>
+        </div>
+
+        {% if reference_links %}
+          <div class="references">
+            <h3><i class="fas fa-link"></i> Reference Sources:</h3>
+            <ul>
+              {% for link in reference_links %}
+                <li>
+                  <a href="{{ link }}" target="_blank">
+                    <i class="fas fa-external-link-alt"></i>
+                    {{ link }}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <div class="feedback-section">
+          <h3><i class="fas fa-comment-alt"></i> Was this analysis helpful?</h3>
+          <div class="feedback-buttons">
+            <button class="feedback-btn" data-feedback="yes">
+              <i class="fas fa-thumbs-up"></i> Yes
+            </button>
+            <button class="feedback-btn" data-feedback="no">
+              <i class="fas fa-thumbs-down"></i> No
+            </button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a href="/" class="button">
+            <i class="fas fa-redo"></i> Check Another
+          </a>
+          <button class="button" id="shareResult">
+            <i class="fas fa-share-alt"></i> Share Result
+          </button>
+        </div>
       </div>
-
-      {% if reference_links %}
-        <h3>References:</h3>
-        <ul>
-          {% for link in reference_links %}
-            <li><a href="{{ link }}" target="_blank">{{ link }}</a></li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-
-      <a href="/">Check Another</a>
     </main>
+
+    <footer>
+      <p>&copy; 2025 MedLens - Medical Information Verification System</p>
+    </footer>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Feedback functionality
+      const feedbackButtons = document.querySelectorAll('.feedback-btn');
+      feedbackButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const feedback = this.dataset.feedback;
+          // Here you would typically send the feedback to your backend
+          alert(`Thank you for your ${feedback === 'yes' ? 'positive' : 'negative'} feedback!`);
+          
+          // Visual feedback
+          feedbackButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+
+      // Share functionality
+      document.getElementById('shareResult').addEventListener('click', function() {
+        if (navigator.share) {
+          navigator.share({
+            title: 'MedLens Analysis Result',
+            text: 'Check out this medical information analysis result from MedLens!',
+            url: window.location.href
+          }).catch(console.error);
+        } else {
+          // Fallback for browsers that don't support Web Share API
+          const dummy = document.createElement('input');
+          document.body.appendChild(dummy);
+          dummy.value = window.location.href;
+          dummy.select();
+          document.execCommand('copy');
+          document.body.removeChild(dummy);
+          alert('Link copied to clipboard!');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
