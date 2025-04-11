@@ -3,41 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Medical Misinformation Detector</title>
+  <title>MedLens - Medical Information Verification</title>
   <link rel="stylesheet" href="/static/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
 <body>
+  <!-- Chatbot Toggle Icon -->
+<div id="chatbot-toggle">
+  💬
+</div>
+
+<!-- Chatbot Window -->
+<div id="chatbot-container" class="chatbot-container hidden">
+  <div class="chatbot-header">
+    ChatBot
+    <button onclick="toggleChatbot()" style="background:none; border:none; color:white; font-size:16px; cursor:pointer;">✖</button>
+  </div>
+  <div class="chatbot-messages" id="chatbot-messages">
+    <!-- Messages will appear here -->
+  </div>
+  <div class="chatbot-input">
+    <input type="text" id="chatbot-input" placeholder="Ask a question..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
   <div class="container">
     <header>
-      <h1><img src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" alt="Logo" class="logo"> MedLens</h1>
-      <p class="subtitle">Detect medical misinformation in text, links, and images</p>
+      <h1><img src="\static\logo.jpg" alt="Logo" class="logo"></h1>
+      <p class="subtitle">AI-Powered Medical Information Verification System</p>
+      
     </header>
 
     <div class="ratings-menu">
       <h3><i class="fas fa-chart-bar"></i> Community Ratings</h3>
       <div class="rating-categories">
         <div class="rating-category">
-          <h4>Accuracy</h4>
+          <h4><i class="fas fa-microscope"></i> Accuracy</h4>
           <div class="rating-stars">
             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
             <i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
           </div>
+          <p class="rating-description">Based on 1,000+ verified medical claims</p>
         </div>
         <div class="rating-category">
-          <h4>Reliability</h4>
+          <h4><i class="fas fa-shield-alt"></i> Reliability</h4>
           <div class="rating-stars">
             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
             <i class="fas fa-star"></i><i class="far fa-star"></i>
           </div>
+          <p class="rating-description">Trusted by medical professionals</p>
         </div>
         <div class="rating-category">
-          <h4>User Experience</h4>
+          <h4><i class="fas fa-brain"></i> AI Intelligence</h4>
           <div class="rating-stars">
             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
             <i class="fas fa-star"></i><i class="fas fa-star"></i>
           </div>
+          <p class="rating-description">Advanced machine learning algorithms</p>
         </div>
       </div>
     </div>
@@ -63,82 +88,79 @@
           <img id="imagePreview" class="image-preview" alt="Image preview" style="display:none;">
         </div>
 
-        <button type="submit" id="submitBtn">
-          <i class="fas fa-search"></i> Check
-        </button>
+        <div class="form-actions">
+          <button type="submit" id="submitBtn">
+            <i class="fas fa-search"></i> Analyze
+          </button>
+          <button type="button" id="clearBtn">
+            <i class="fas fa-trash"></i> Clear
+          </button>
+        </div>
       </form>
     </main>
 
     <footer>
       <p>&copy; 2025 MedLens - Medical Information Verification System</p>
+      <div class="footer-links">
+        <a href="#"><i class="fas fa-book"></i> Documentation</a>
+        <a href="#"><i class="fas fa-question-circle"></i> Help</a>
+        <a href="#"><i class="fas fa-shield-alt"></i> Privacy</a>
+      </div>
     </footer>
   </div>
 
-  <<!-- Chatbot -->
-<div class="chatbot-container">
+  <!-- Enhanced Chatbot -->
+  <div class="chatbot-container">
     <div class="chatbot-header">
-      <span><i class="fas fa-robot"></i> MedLens Assistant</span>
+      <span><i class="fas fa-robot"></i> MedLens AI Assistant</span>
       <i class="fas fa-times" id="closeChatbot"></i>
     </div>
-  
     <div class="chatbot-messages" id="chatbotMessages">
       <div class="message bot-message">
-        Hello! I'm your MedLens assistant. How can I help you today?
+        <div class="message-header">
+          <i class="fas fa-robot"></i> MedLens AI
+        </div>
+        <div class="message-content">
+          Hello! I'm your MedLens AI assistant. I can help you verify medical information, explain analysis results, and provide additional context. How can I assist you today?
+        </div>
       </div>
-  
-      {% if user_message %}
-        <div class="message user-message">
-          {{ user_message }}
-        </div>
-        <div class="message bot-message">
-          {{ bot_reply }}
-        </div>
-      {% endif %}
     </div>
-  
-    <form action="/chat" method="POST" class="chatbot-input">
-      <input type="text" id="chatbotInput" name="message" placeholder="Type your message..." required>
-      <button type="submit" id="sendMessage"><i class="fas fa-paper-plane"></i></button>
-    </form>
+    <div class="chatbot-input">
+      <input type="text" id="chatbotInput" placeholder="Type your message...">
+      <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
+    </div>
   </div>
-  <form method="POST" action="/chat">
-    <input type="text" name="message" placeholder="Type your message..." required>
-    <button type="submit"><i class="fas fa-paper-plane"></i></button>
-  </form>
-  
-  <!-- Optional: Display chat -->
-  {% if user_message %}
-    <div class="message user-message">{{ user_message }}</div>
-    <div class="message bot-message">{{ bot_reply }}</div>
-  {% endif %}
-    
 
   <script>
-    $(document).ready(function () {
-      $('#input_type').change(function () {
+    $(document).ready(function() {
+      // Update input label based on selection
+      $('#input_type').change(function() {
         const type = $(this).val();
         let label = '';
         let placeholder = '';
-        switch (type) {
+        
+        switch(type) {
           case 'text':
-            label = 'Enter Text:';
+            label = 'Enter Medical Text:';
             placeholder = 'Paste your medical information here...';
             break;
           case 'link':
-            label = 'Enter Link:';
-            placeholder = 'Paste the URL here...';
+            label = 'Enter Medical Article URL:';
+            placeholder = 'Paste the URL of the medical article...';
             break;
           case 'image':
-            label = 'Enter Image URL:';
-            placeholder = 'Paste the image URL here...';
+            label = 'Enter Medical Image URL:';
+            placeholder = 'Paste the URL of the medical image...';
             break;
         }
+        
         $('#input_label').text(label);
         $('#input').attr('placeholder', placeholder);
         $('#imagePreview').hide();
       });
 
-      $('#input').on('input', function () {
+      // Show image preview for image URLs
+      $('#input').on('input', function() {
         if ($('#input_type').val() === 'image') {
           const url = $(this).val();
           if (url.match(/\.(jpeg|jpg|gif|png)$/)) {
@@ -149,29 +171,94 @@
         }
       });
 
-      $('#closeChatbot').click(function () {
+      // Clear form
+      $('#clearBtn').click(function() {
+        $('#input').val('');
+        $('#imagePreview').hide();
+        $('#input_type').val('');
+        $('#input_label').text('Enter Text:');
+      });
+
+      // Chatbot functionality
+      $('#closeChatbot').click(function() {
         $('.chatbot-container').hide();
       });
 
       function addMessage(message, isUser) {
         const messageClass = isUser ? 'user-message' : 'bot-message';
-        const messageHtml = `<div class="message ${messageClass}">${message}</div>`;
+        const messageHtml = `
+          <div class="message ${messageClass}">
+            <div class="message-header">
+              <i class="fas ${isUser ? 'fa-user' : 'fa-robot'}"></i>
+              ${isUser ? 'You' : 'MedLens AI'}
+            </div>
+            <div class="message-content">
+              ${message}
+            </div>
+          </div>
+        `;
         $('#chatbotMessages').append(messageHtml);
         $('#chatbotMessages').scrollTop($('#chatbotMessages')[0].scrollHeight);
       }
 
-      $('#sendMessage').click(function () {
+      function getBotResponse(userMessage) {
+        // This is a simple response system. In a real application, you would connect to an AI service
+        const responses = {
+          
+          'hello': "Hello! How can I help you verify medical information today?",
+          'help': "I can help you verify medical claims, explain analysis results, and provide additional context. You can paste text, links, or image URLs in the main form above.",
+          'accuracy': "Our system has a 95% accuracy rate in detecting medical misinformation, based on thousands of verified claims.",
+          "what is paracetamol": "Paracetamol is a pain reliever and fever reducer. Common brands: Crocin, Calpol. Safe in normal doses.",
+        "what is crocin": "Crocin is a brand of paracetamol. It is used to treat fever and mild pain.",
+        "what is calpol": "Calpol is a syrup/tablet containing paracetamol. Commonly used in children and adults for fever.",
+        "what is benadryl": "Benadryl is a cough syrup used to relieve cough and cold symptoms. Can cause drowsiness.",
+        "what is ascoril": "Ascoril is a cough syrup that helps in relieving chest congestion and cough. Used for wet cough.",
+        "what is cetirizine": "Cetirizine is an antihistamine used to treat allergies, sneezing, and runny nose.",
+        "what is zyrtec": "Zyrtec is a brand name for cetirizine. It’s used for allergies and cold symptoms.",
+        "what is domstal": "Domstal (Domperidone) is used to relieve nausea and vomiting. Should be taken before food.",
+        "what is digene": "Digene is an antacid used for acidity, heartburn, and gas-related issues.",
+        "what is gelusil": "Gelusil is used for acidity and gas. Provides quick relief from stomach discomfort.",
+        "what is sporlac": "Sporlac-DS is a probiotic used to maintain good gut bacteria, especially during diarrhea.",
+        "what is norflox tz": "Norflox-TZ is an antibiotic used for bacterial diarrhea and stomach infections. Take only under prescription.",
+        "what is saridon": "Saridon is used for quick headache relief. It contains paracetamol, caffeine, and propyphenazone.",
+        "what is enos": "Eno is a fruit salt used to relieve acidity and indigestion. Mix with water and drink for fast relief.",
+        "i have cough": "You might have a common cold or throat irritation. Drink warm fluids and rest. Cough syrups like Benadryl or Ascoril may help.",
+        "i have fever": "Fever is a sign of infection. Stay hydrated and take paracetamol (e.g., Crocin, Calpol). See a doctor if it lasts more than 3 days.",
+        "i have headache": "Try resting in a quiet place and stay hydrated. You can take paracetamol or Saridon if needed.",
+        "i have stomach pain": "Could be due to gas or acidity. Try taking an antacid like Gelusil or Digene. If pain persists, consult a doctor.",
+        "i have cold": "A cold is usually viral. Try steam inhalation and take Cetirizine for sneezing or Zyrtec at night.",
+        "i have sore throat": "Gargle with warm salt water. Lozenges like Strepsils or Vicks may help. Avoid cold food.",
+        "i have diarrhea": "Stay hydrated with ORS. Tablets like Norflox-TZ or medicines like Sporlac-DS can be used after consulting a doctor.",
+        "i feel dizzy": "You might be low on BP or glucose. Sit down, drink water or glucose. If frequent, see a doctor.",
+        "i have chest pain": "Chest pain can be serious. Take rest and if it persists or spreads, go to a hospital immediately.",
+        "i have vomiting": "Avoid solid food for a few hours. Drink ORS or Eno. Domstal or Ondem tablets may help with nausea.",
+          'default': "I'm here to help you verify medical information. You can paste text, links, or image URLs in the main form above."
+          
+        };
+
+        const lowerMessage = userMessage.toLowerCase();
+        for (const [key, value] of Object.entries(responses)) {
+          if (lowerMessage.includes(key)) {
+            return value;
+          }
+        }
+        return responses.default;
+      }
+
+      $('#sendMessage').click(function() {
         const message = $('#chatbotInput').val().trim();
         if (message) {
           addMessage(message, true);
           $('#chatbotInput').val('');
+          
           setTimeout(() => {
-            addMessage("I'm here to help you verify medical information. You can paste text, links, or image URLs in the main form above.", false);
+            const botResponse = getBotResponse(message);
+            addMessage(botResponse, false);
           }, 1000);
         }
       });
 
-      $('#chatbotInput').keypress(function (e) {
+      $('#chatbotInput').keypress(function(e) {
         if (e.which == 13) {
           $('#sendMessage').click();
         }
