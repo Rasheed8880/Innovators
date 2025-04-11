@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Result - MedInfoCheck</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><img src="https://cdn-icons-png.flaticon.com/512/3774/3774299.png" alt="Logo" class="logo"> MedInfoCheck</h1>
+    </header>
+
+    <main>
+      <h2>Result:</h2>
+      <p><strong>Status:</strong> {{ result }}</p>
+
+      <div class="stars">
+        {% for i in range(0, stars) %}
+          <span>&#9733;</span>
+        {% endfor %}
+        {% for i in range(stars, 5) %}
+          <span class="dim">&#9733;</span>
+        {% endfor %}
+      </div>
+
+      {% if reference_links %}
+        <h3>References:</h3>
+        <ul>
+          {% for link in reference_links %}
+            <li><a href="{{ link }}" target="_blank">{{ link }}</a></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <a href="/">Check Another</a>
+    </main>
+  </div>
+</body>
+</html>
