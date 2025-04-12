@@ -1,0 +1,162 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e0f2f1;
+    color: #004d40;
+  }
+  
+  .container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  header {
+    background-color: #00695c;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 3px solid #004d40;
+  }
+  
+  .logo {
+    height: 50px;
+  }
+  
+  h1 {
+    font-size: 1.6em;
+    margin: 0;
+  }
+  
+  main {
+    flex: 1;
+    padding: 10px 20px;
+    overflow-y: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .result-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    width: 100%;
+    max-width: 1000px;
+    box-shadow: 0 4px 10px rgba(0, 105, 92, 0.2);
+  }
+  
+  .result-container h2 {
+    font-size: 1.4em;
+    margin-bottom: 10px;
+    color: #00695c;
+  }
+  
+  .status {
+    text-align: center;
+    font-size: 1.2em;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 15px 0;
+  }
+  
+  .status.real {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 2px solid #66bb6a;
+  }
+  
+  .status.fake {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 2px solid #ef5350;
+  }
+  
+  .confidence, .references, .feedback-section, .actions {
+    margin-top: 12px;
+  }
+  
+  .stars {
+    font-size: 1.4em;
+    color: #ffb300;
+  }
+  
+  .stars .dim {
+    color: #ccc;
+  }
+  
+  .references ul {
+    margin: 0;
+    padding-left: 16px;
+  }
+  
+  .references a {
+    color: #00796b;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 0.95em;
+  }
+  
+  .references a:hover {
+    text-decoration: underline;
+  }
+  
+  .feedback-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .feedback-btn {
+    padding: 8px 12px;
+    background-color: #26a69a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9em;
+    cursor: pointer;
+  }
+  
+  .feedback-btn:hover {
+    background-color: #00796b;
+  }
+  
+  .feedback-btn.active {
+    background-color: #004d40;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  
+  .button {
+    padding: 10px 18px;
+    background-color: #004d40;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.95em;
+    cursor: pointer;
+  }
+  
+  .button:hover {
+    background-color: #00695c;
+  }
+  
+  footer {
+    background-color: #004d40;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.85em;
+    border-top: 3px solid #00695c;
+  }
+  
